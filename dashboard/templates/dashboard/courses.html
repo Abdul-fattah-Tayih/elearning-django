@@ -4,6 +4,19 @@
 
 {% block content %}
 
-<h1>Courses Home</h1>
+<h1>Courses</h1>
+
+
+    <div class='card_grid'>
+        {% for course in courses %}
+        <div class='card'>
+            <a href="/dashboard/courses/{{course.id}}" style='font-weight: bold'>{{ course.name }}</a>
+            <small style='margin-top: 0.5rem'>{{ course.updated_date }}</small>
+            <div style='margin-top: 0.5rem'>{{ course.description }}</div>
+
+            <a class='main_button' href="/dashboard/courses/{{course.id}}">View</a>
+        </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}

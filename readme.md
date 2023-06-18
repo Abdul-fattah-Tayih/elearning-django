@@ -55,3 +55,13 @@ python manage.py runserver
 ```
 
 and navigate to http://127.0.0.1:8000
+
+### Admin
+Create an admin user using
+```shell
+python manage.py createsuperuser
+```
+
+And follow the instructions
+
+After creation, navigate to http://127.0.0.1:8000/admin to create the data

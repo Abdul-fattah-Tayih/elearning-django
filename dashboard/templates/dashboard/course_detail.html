@@ -1,9 +1,21 @@
 {% extends 'dashboard/main.html' %}
 
-{% block title %}Course {{ course_id }}{% endblock %}
+{% block title %}Course {{ course.name }}{% endblock %}
 
 {% block content %}
 
-<h1>Course {{ course_id }}</h1>
+<h1>{{ course.name }}</h1>
+<div>
+    {{ course.description}}
+</div>
+
+<h2>Lessons</h2>
+{% for lesson in course.lesson_set.all %}
+<div>
+    <h3>{{ lesson.name }}</h3>
+    <div>{{ lesson.description}}</div>
+    <div>{{ lesson.content }}</div>
+</div>
+{% endfor %}
 
 {% endblock %}

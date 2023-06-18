@@ -1,18 +1,25 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+    <link rel='stylesheet' type='text/css' href="{% static 'styles/main.css' %}"/>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/about-us">about</a>
-        <a href="/login">login</a>
-    </nav>
-    <div>
+    <ul class='nav'>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about-us">About us</a></li>
+        {% if request.user.is_authenticated %}
+        <li style="float:right"><a href="/dashboard">Dashboard</a></li>
+        <li style="float:right"><a href="/auth/logout">logout</a></li>
+        {% else %}
+        <li style="float:right"><a href="/auth/login">Login</a></li>
+        {% endif %}
+    </ul>
+    <div class='content'>
         {% block content %} {% endblock %}
     </div>
 </body>

@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class='card' style='width: 50%; margin: 10rem auto'>
+    <form method='POST' action='/auth/login'>
+        {% csrf_token %}
+        <div>
+            <label>Username</label>
+            <input type='text' placeholder='Username' name='username' class='form_input'/>
+        </div>
+        <div>
+            <label>Password</label>
+            <input type='password' placeholder='Password' name='password' class='form_input'/>
+        </div>
+        <input type='submit' class='main_button' value='Login'>
+    </form>
+</div>
+
+{% endblock %}

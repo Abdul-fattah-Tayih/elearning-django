@@ -3,9 +3,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Course(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=264)
     description = models.TextField(null=True, blank=True)
-    created_by = models.OneToOneField(User)
     participants = models.ManyToManyField(User)
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
@@ -14,11 +13,11 @@ class Course(models.Model):
         return self.name
 
 class Lesson(models.Model):
-    name = models.CharField()
-    description = models.CharField(null=True, blank=True)
+    name = models.CharField(max_length=264)
+    description = models.CharField(max_length=511, null=True, blank=True)
     content = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    created_by = models.OneToOneField(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
