@@ -4,11 +4,15 @@
 
 {% block content %}
 
-<h1>Courses</h1>
-
-
+    <div style="display: flex; justify-content: space-between; align-items: center">
+        <h1>Courses</h1>
+        {% if perms.dashboard.add_course %}
+        <a class='main_button' href="">Create Course</a>
+        {% endif %}
+    </div>
+    
     <div class='card_grid'>
-        {% for course in courses %}
+        {% for course in object_list %}
         <div class='card'>
             <a href="/dashboard/courses/{{course.id}}" style='font-weight: bold'>{{ course.name }}</a>
             <small style='margin-top: 0.5rem'>{{ course.updated_date }}</small>

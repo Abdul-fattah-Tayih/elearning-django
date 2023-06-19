@@ -32,21 +32,24 @@ Or from windows store https://apps.microsoft.com/store/detail/python-310/9PJPW5L
 
 In powershell or cmd 
 ```shell
-pip install django
+cd path\to\project
+pip install # or pipenv install if you have it
 ```
 
 ### MacOS
 Open the terminal and hit the following commands
 ```shell
 brew install python@3.10 # or just python for latest
-pip install django
+cd path/to/project
+pip install # or pipenv install if you have it
 ```
 
 ### Ubuntu
 Open the terminal and hit the following commands
 ```shell
 sudo apt install python3.10 # or just python for latest
-pip install django
+cd path/to/project
+pip install # or pipenv install if you have it
 ```
 
 ### Starting the app
@@ -56,9 +59,12 @@ python manage.py runserver
 
 and navigate to http://127.0.0.1:8000
 
-### Admin
+### Migrations and Admin
 Create an admin user using
 ```shell
+python manage.py makemigrations
+python manage.py migrate
+python manage.py seed_user_groups_and_permissions
 python manage.py createsuperuser
 ```
 
