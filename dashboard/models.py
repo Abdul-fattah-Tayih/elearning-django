@@ -23,3 +23,9 @@ class Lesson(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def next_lesson_exists(self, user_id, course_id = None):
+       return Lesson.objects.filter(id__gt=self.id, course__id=course_id or self.course.id, course__participants__id=user_id).exists()
+    
+    def previous_lesson_exists(self, user_id, course_id = None):
+       return Lesson.objects.filter(id__lt=self.id, course__id=course_id or self.course.id, course__participants__id=user_id).exists()

@@ -1,26 +1,41 @@
-{% extends 'dashboard/main.html' %}
+{% extends 'main.html' %}
 
 {% block title %}Courses{% endblock %}
 
 {% block content %}
 
-    <div style="display: flex; justify-content: space-between; align-items: center">
-        <h1>Courses</h1>
-        {% if perms.dashboard.add_course %}
-        <a class='main_button' href="">Create Course</a>
-        {% endif %}
-    </div>
-    
-    <div class='card_grid'>
-        {% for course in object_list %}
-        <div class='card'>
-            <a href="/dashboard/courses/{{course.id}}" style='font-weight: bold'>{{ course.name }}</a>
-            <small style='margin-top: 0.5rem'>{{ course.updated_date }}</small>
-            <div style='margin-top: 0.5rem'>{{ course.description }}</div>
-
-            <a class='main_button' href="/dashboard/courses/{{course.id}}">View</a>
+    <div class='container pt-4'>
+        <div style="display: flex; justify-content: space-between; align-items: center">
+            <h1>Courses</h1>
+            {% if perms.dashboard.add_course %}
+            <a class='btn btn-primary' href="">Create Course</a>
+            {% endif %}
         </div>
-        {% endfor %}
+        
+        <div class='row row-cols-2 g-4'>
+            {% for course in object_list %}
+            <div class='col'>
+                <div class='card mb-4 h-100 '>
+                    <div class='card-body'>
+                        <h4><a href="/dashboard/courses/{{course.id}}" class='card-title'>{{ course.name }}</a></h4>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ course.lesson__count }} Lessons</h6>
+                        <small style='margin-top: 0.5rem'>{{ course.updated_date }}</small>
+                        <div style='margin-top: 0.5rem'>{{ course.description }}</div>
+                    </div>
+                    <div class='mt-2 card-footer'>
+                        <a class='btn btn-primary' href="/dashboard/courses/{{course.id}}">View</a>
+                        {% if perms.dashboard.change_course %}
+                        <a class='btn btn-secondary' href="/dashboard/courses/{{course.id}}/edit">Edit</a>
+                        {% endif %}
+
+                        {% if perms.dashboard.delete_course %}
+                        <a class='btn btn-danger' href="/dashboard/courses/{{course.id}}">Delete</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
 {% endblock %}

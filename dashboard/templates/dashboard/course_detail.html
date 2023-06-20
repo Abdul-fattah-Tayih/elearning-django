@@ -1,21 +1,59 @@
-{% extends 'dashboard/main.html' %}
+{% extends 'main.html' %}
 
 {% block title %}Course {{ course.name }}{% endblock %}
 
 {% block content %}
 
-<h1>{{ course.name }}</h1>
-<div>
-    {{ course.description}}
-</div>
-
-<h2>Lessons</h2>
-{% for lesson in course.lesson_set.all %}
-<div>
-    <h3>{{ lesson.name }}</h3>
-    <div>{{ lesson.description}}</div>
-    <div>{{ lesson.content }}</div>
-</div>
-{% endfor %}
+<!-- Page Content-->
+<section class="py-5">
+    <div class="container my-5">
+        <div class="row gx-5">
+            <div class="col">
+                <!-- Post content-->
+                <article>
+                    <!-- Post header-->
+                    <header class="mb-4">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard.courses' %}">Courses</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+                            </ol>
+                        </nav>
+                        <!-- Post title-->
+                        <h1 class="fw-bolder mb-1">{{ course.name }}</h1>
+                        <!-- Post meta content-->
+                        <div class="text-muted fst-italic mb-2">{{ course.updated_date|date }}</div>
+                        <!-- Post categories-->
+                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
+                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                    </header>
+                    <!-- Post content-->
+                    <section class="mb-5">
+                        <p class="fs-5 mb-4">{{ course.description }}</p>
+                    </section>
+                </article>
+            </div>
+            <div>
+                <h2>Lessons</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for lesson in course.lesson_set.all %}
+                <div class='col'>
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ lesson.name }}</h5>
+                            <p class="card-text">{{ lesson.description}}</p>
+                            {% if perms.dashboard.view_lesson %}
+                            <a class='card-link' href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">View</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</main>
 
 {% endblock %}
