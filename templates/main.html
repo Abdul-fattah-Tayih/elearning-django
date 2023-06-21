@@ -52,6 +52,14 @@
             </nav>
 
             <section class='min-vh-100'>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class='alert alert-info'>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
             {% block content %} {% endblock %}
             </section>
 

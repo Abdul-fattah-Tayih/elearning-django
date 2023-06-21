@@ -32,11 +32,11 @@
                     <section class="mb-5">
                         <p class="fs-5 mb-4">{{ lesson.content }}</p>
                     </section>
-                    {% if previous_lesson_exists %}
-                    <a class='btn btn-secondary' href="{% url 'dashboard.previous_lesson' lesson.course.id lesson.id %}">{{ '<' }} Previous</a>
+                    {% if previous_lesson %}
+                    <a class='btn btn-secondary' href="{% url 'dashboard.lesson_detail' lesson.course.id previous_lesson.id %}">{{ '<' }} Previous</a>
                     {% endif %}
-                    {% if next_lesson_exists %}
-                    <a class='btn btn-primary' href="{% url 'dashboard.next_lesson' lesson.course.id lesson.id %}">Next {{ '>' }}</a>
+                    {% if next_lesson %}
+                    <a class='btn btn-primary' href="{% url 'dashboard.lesson_detail' lesson.course.id next_lesson.id %}">Next {{ '>' }}</a>
                     {% endif %}
                 </article>
             </div>

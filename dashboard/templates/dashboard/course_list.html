@@ -8,7 +8,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center">
             <h1>Courses</h1>
             {% if perms.dashboard.add_course %}
-            <a class='btn btn-primary' href="">Create Course</a>
+            <a class='btn btn-primary' href="{% url 'dashboard.add_courses' %}">Create Course</a>
             {% endif %}
         </div>
         
@@ -29,7 +29,7 @@
                         {% endif %}
 
                         {% if perms.dashboard.delete_course %}
-                        <a class='btn btn-danger' href="/dashboard/courses/{{course.id}}">Delete</a>
+                        <a class='btn btn-danger' href="{% url 'dashboard.delete_course' course.id %}">Delete</a>
                         {% endif %}
                     </div>
                 </div>

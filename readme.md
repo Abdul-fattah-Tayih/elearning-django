@@ -62,7 +62,6 @@ and navigate to http://127.0.0.1:8000
 ### Migrations and Admin
 Create an admin user using
 ```shell
-python manage.py makemigrations
 python manage.py migrate
 python manage.py seed_user_groups_and_permissions
 python manage.py createsuperuser
@@ -70,4 +69,6 @@ python manage.py createsuperuser
 
 And follow the instructions
 
-After creation, navigate to http://127.0.0.1:8000/admin to create the data
+After creation, navigate to http://127.0.0.1:8000/admin to create teachers and students
+
+Then you can login using http://127.0.0.1/dashboard and create courses and assign students and teachers to them
