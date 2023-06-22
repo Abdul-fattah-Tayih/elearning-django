@@ -11,9 +11,9 @@
             <li class="breadcrumb-item active" aria-current="page">Edit {{ lesson.name }}</li>
         </ol>
     </nav>
-    <div class='card'>
+    <h3 class='my-3'>Edit {{ lesson.name }}</h3>
+    <div class='card h-100 shadow border-0'>
         <div class='card-body'>
-            <h3 class='card-title'>Edit {{ lesson.name }}</h3>
             <form method='POST' action="{% url 'dashboard.edit_lesson' lesson.course.id lesson.id %}">
                 {% csrf_token %}
                 {{ form.as_p }}

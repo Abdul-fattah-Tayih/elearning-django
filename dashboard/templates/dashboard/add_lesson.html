@@ -11,9 +11,9 @@
             <li class="breadcrumb-item active" aria-current="page">Add Lesson</li>
         </ol>
     </nav>
-    <div class='card'>
+    <h3 class='my-3'>Add lesson to {{ course.name }}</h3>
+    <div class='card h-100 shadow border-0'>
         <div class='card-body'>
-            <h3 class='card-title'>Add lesson to {{ course.name }}</h3>
             <form method='POST' action="{% url 'dashboard.add_lesson' course.id %}">
                 {% csrf_token %}
                 {{ form.as_p }}

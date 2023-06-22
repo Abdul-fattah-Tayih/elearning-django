@@ -37,11 +37,14 @@
                                 <!-- Post categories-->
                                 <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
                                 <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                                <figure class="my-4">
+                                    <img class="img-fluid rounded" src="https://picsum.photos/900/400?random={{course.id}}" alt="...">
+                                </figure>
                             </header>
                             <p class="fs-5 mb-4">{{ course.description|linebreaks }}</p>
                             <div>
                                 {% if perms.dashboard.add_lesson %}
-                                <a class='btn btn-secondary' href="{% url 'dashboard.add_lesson' course.id %}">Add Lesson</a>
+                                <a class='btn btn-primary' href="{% url 'dashboard.add_lesson' course.id %}">Add Lesson</a>
                                 {% endif %}
                             </div>
                         </section>

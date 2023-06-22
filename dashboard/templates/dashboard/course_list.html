@@ -5,32 +5,34 @@
 {% block content %}
 
     <div class='container pt-4'>
-        <div style="display: flex; justify-content: space-between; align-items: center">
+        <div style="display: flex; justify-content: space-between; align-items: center" class='mb-3'>
             <h1>Courses</h1>
             {% if perms.dashboard.add_course %}
             <a class='btn btn-primary' href="{% url 'dashboard.add_courses' %}">Create Course</a>
             {% endif %}
         </div>
         
-        <div class='row row-cols-2 g-4'>
+        <div class='row row-cols-3 g-4'>
             {% for course in object_list %}
             <div class='col'>
-                <div class='card mb-4 h-100 '>
-                    <div class='card-body'>
-                        <h4><a href="/dashboard/courses/{{course.id}}" class='card-title'>{{ course.name }}</a></h4>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ course.lesson__count }} Lessons</h6>
-                        <small style='margin-top: 0.5rem'>{{ course.updated_date }}</small>
-                        <div style='margin-top: 0.5rem'>{{ course.description }}</div>
+                <div class="card h-100 shadow border-0">
+                    <img class="card-img-top" src="https://picsum.photos/600/350?random={{course.id}}" alt="..." />
+                    <div class="card-body p-4">
+                        <div class="badge bg-primary bg-gradient rounded-pill mb-2">{{ course.lesson__count }} Lessons</div>
+                        <a class="text-decoration-none link-dark" href="{% url 'dashboard.course_detail' course.id %}"><h5 class="card-title mb-3">{{ course.name }}</h5></a>
+                        <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                     </div>
-                    <div class='mt-2 card-footer'>
-                        <a class='btn btn-primary' href="/dashboard/courses/{{course.id}}">View</a>
-                        {% if perms.dashboard.change_course %}
-                        <a class='btn btn-secondary' href="/dashboard/courses/{{course.id}}/edit">Edit</a>
-                        {% endif %}
+                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
+                        <div class='mt-2'>
+                            <a class='btn btn-sm btn-primary rounded' href="{% url 'dashboard.course_detail' course.id %}">View</a>
+                            {% if perms.dashboard.change_course %}
+                            <a class='btn btn-sm btn-warning rounded' href="{% url 'dashboard.edit_course' course.id %}">Edit</a>
+                            {% endif %}
 
-                        {% if perms.dashboard.delete_course %}
-                        <a class='btn btn-danger' href="{% url 'dashboard.delete_course' course.id %}">Delete</a>
-                        {% endif %}
+                            {% if perms.dashboard.delete_course %}
+                            <a class='btn btn-sm btn-danger rounded' href="{% url 'dashboard.delete_course' course.id %}">Delete</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
