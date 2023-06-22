@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+
+{% block title %}Add Course{% endblock %}
+
+{% block content %}
+<div class='container mt-2 py-2'>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard.courses' %}">Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard.course_detail' course.id %}">{{ course.name}}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Lesson</li>
+        </ol>
+    </nav>
+    <div class='card'>
+        <div class='card-body'>
+            <h3 class='card-title'>Add lesson to {{ course.name }}</h3>
+            <form method='POST' action="{% url 'dashboard.add_lesson' course.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <br>
+                <button class='btn btn-primary'>Add Lesson</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

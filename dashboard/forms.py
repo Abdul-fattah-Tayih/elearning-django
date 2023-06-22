@@ -1,5 +1,5 @@
 from django import forms
-from dashboard.models import Course
+from dashboard.models import Course, Lesson
 from django.contrib.auth.models import User
 
 class AddCourseForm(forms.ModelForm):
@@ -19,3 +19,11 @@ class EditCourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ('name', 'description', 'participants')
+
+class LessonForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'name'}))
+    content = forms.CharField(required=True, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'description'}))
+
+    class Meta:
+        model = Lesson
+        fields = ('name', 'content')

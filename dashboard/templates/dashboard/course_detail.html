@@ -5,51 +5,48 @@
 {% block content %}
 
 <!-- Page Content-->
-<section class="py-5">
-    <div class="container my-5">
+<section>
+    <div class="container-fluid">
         <div class="row gx-5">
             <div class="col">
                 <!-- Post content-->
                 <article>
                     <!-- Post header-->
-                    <header class="mb-4">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{% url 'dashboard.courses' %}">Courses</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
-                            </ol>
+                    <div class='row'>
+                        <nav class="col-lg-2 nav min-vh-100 bg-dark flex-column align-content-center text-center py-5 pe-0">
+                            <a class="nav-link w-100 text-white sidebar-active" aria-current="page" href="#">{{ course.name }}</a>
+                            {% for lesson in course.lesson_set.all %}
+                                {% if perms.dashboard.view_lesson %}
+                                <a class="nav-link text-white w-100" href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">{{ lesson.name }}</a>
+                                {% endif %}
+                            {% endfor %}
                         </nav>
-                        <!-- Post title-->
-                        <h1 class="fw-bolder mb-1">{{ course.name }}</h1>
-                        <!-- Post meta content-->
-                        <div class="text-muted fst-italic mb-2">{{ course.updated_date|date }}</div>
-                        <!-- Post categories-->
-                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-                        <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
-                    </header>
-                    <!-- Post content-->
-                    <section class="mb-5">
-                        <p class="fs-5 mb-4">{{ course.description }}</p>
-                    </section>
-                </article>
-            </div>
-            <div>
-                <h2>Lessons</h2>
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for lesson in course.lesson_set.all %}
-                <div class='col'>
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ lesson.name }}</h5>
-                            <p class="card-text">{{ lesson.description}}</p>
-                            {% if perms.dashboard.view_lesson %}
-                            <a class='card-link' href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">View</a>
-                            {% endif %}
-                        </div>
+                        <!-- Post content-->
+                        <section class="col-lg-10 mb-5 my-5 px-5">
+                            <header class="mb-4">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="{% url 'dashboard.courses' %}">Courses</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+                                    </ol>
+                                </nav>
+                                <!-- Post title-->
+                                <h1 class="fw-bolder mb-1">{{ course.name }}</h1>
+                                <!-- Post meta content-->
+                                <div class="text-muted fst-italic mb-2">{{ course.updated_date|date }}</div>
+                                <!-- Post categories-->
+                                <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
+                                <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                            </header>
+                            <p class="fs-5 mb-4">{{ course.description|linebreaks }}</p>
+                            <div>
+                                {% if perms.dashboard.add_lesson %}
+                                <a class='btn btn-secondary' href="{% url 'dashboard.add_lesson' course.id %}">Add Lesson</a>
+                                {% endif %}
+                            </div>
+                        </section>
                     </div>
-                </div>
-                {% endfor %}
-                </div>
+                </article>
             </div>
         </div>
     </div>
