@@ -14,4 +14,5 @@ urlpatterns = [
     path('courses/<int:course_id>/lessons/<int:lesson_id>', views.lesson_detail, name='dashboard.lesson_detail'),
     path('courses/<int:course_id>/lessons/<int:lesson_id>/edit', views.EditLessonView.as_view(), name='dashboard.edit_lesson'),
     path('courses/<int:course_id>/lessons/<int:lesson_id>/delete', views.delete_lesson, name='dashboard.delete_lesson'),
+    path('courses/<int:course_id>/lessons/<int:lesson_id>/completion', views.lesson_completion, name='dashboard.lesson_completion'),
 ]

@@ -14,10 +14,19 @@
                     <!-- Post header-->
                     <div class='row'>
                         <nav class="col-lg-2 nav min-vh-100 bg-dark flex-column align-content-center text-center py-5 pe-0">
+                            <p class='text-white'>Completion</p>
+                            <div class="progress mx-4 mb-4">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ course_completion_percentage }}%" aria-valuenow="{{ course_completion_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ course_completion_percentage }}%</div>
+                            </div>
                             <a class="nav-link w-100 text-white sidebar-active" aria-current="page" href="#">{{ course.name }}</a>
                             {% for lesson in course.lesson_set.all %}
                                 {% if perms.dashboard.view_lesson %}
-                                <a class="nav-link text-white w-100" href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">{{ lesson.name }}</a>
+                                <a class="nav-link text-white w-100" href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">
+                                    {{ lesson.name }}
+                                    {% if lesson.lessoncompletion_set.all %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                    {% endif %}
+                                </a>
                                 {% endif %}
                             {% endfor %}
                         </nav>
@@ -39,7 +48,7 @@
                                 <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
                                 <figure class="my-4">
                                     <img class="img-fluid rounded" src="https://picsum.photos/900/400?random={{course.id}}" alt="...">
-                                </figure>
+                                </figure>                                
                             </header>
                             <p class="fs-5 mb-4">{{ course.description|linebreaks }}</p>
                             <div>

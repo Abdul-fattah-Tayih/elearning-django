@@ -1,6 +1,6 @@
 from django import forms
-from dashboard.models import Course, Lesson
-from django.contrib.auth.models import User
+from dashboard.models import Course, Lesson, LessonCompletion, User
+from dashboard.validators import InList
 
 class AddCourseForm(forms.ModelForm):
     name = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'name'}))
@@ -27,3 +27,6 @@ class LessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
         fields = ('name', 'content')
+
+class LessonCompletionForm(forms.Form):
+    completion = forms.CharField(required=True, widget=forms.HiddenInput(), validators=[InList([LessonCompletion.ACTION_COMPLETE, LessonCompletion.ACTION_INCOMPLETE])])
