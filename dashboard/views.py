@@ -6,18 +6,20 @@ from django.views import View
 from django.views.generic.list import ListView
 from dashboard.forms import AddCourseForm, EditCourseForm, LessonCompletionForm, LessonForm
 from django.contrib import messages
-from dashboard.models import Course, Lesson, LessonCompletion
-from django.db.models import Prefetch
+from dashboard.models import Course, Lesson
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required as permission_required_decorator
 from django.views.decorators.http import require_http_methods
-from django.db.models import Count, Exists, Avg
 
 
 class Dashboard(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, 'dashboard/home.html')
+    def get(self, request: HttpRequest):
+        return render(request, 'dashboard/home.html', {
+            'courses': Course.objects.filter(participants__id=request.user.id).count(),
+            'completed_courses': Course.objects.filter(participants__id=request.user.id).count(),
+            'latest_course': Course.objects.latest_assigned_course(request.user.id),
+        })
 
 
 class CourseView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -26,7 +28,7 @@ class CourseView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     paginate_by = 15
 
     def get_queryset(self) -> QuerySet[Any]:
-        return Course.objects.filter(participants__id=self.request.user.id).annotate(lesson_count=Count('lesson', distinct=True), completed_lesson_count=Count('lesson__lessoncompletion', LessonCompletion.objects.only('id').filter(user_id=self.request.user.id)))
+        return Course.objects.courses_for_user_with_lesson_counts(self.request.user.id)
 
 
 class AddCoursesView(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -54,8 +56,7 @@ class EditCoursesView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = ['dashboard.change_course']
 
     def get(self, request: HttpRequest, course_id: int):
-        course = Course.objects.filter(
-            participants__id=self.request.user.id, id=course_id).prefetch_related('participants').get()
+        course = Course.objects.find_for_user(course_id, request.user.id, ['participants'])
 
         return render(request, 'dashboard/edit_course.html', {
             'form': EditCourseForm(instance=course, initial={
@@ -65,8 +66,7 @@ class EditCoursesView(LoginRequiredMixin, PermissionRequiredMixin, View):
         })
 
     def post(self, request: HttpRequest, course_id: int):
-        course = Course.objects.filter(
-            participants__id=self.request.user.id, id=course_id).get()
+        course = Course.objects.find_for_user(course_id, request.user.id)
         form = EditCourseForm(request.POST, instance=course)
 
         if form.is_valid():
@@ -81,7 +81,7 @@ class EditCoursesView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 class CourseDetailView(LoginRequiredMixin, View):
     def get(self, request: HttpRequest, course_id: int):
-        course = Course.objects.prefetch_related('lesson_set', 'lesson_set__lessoncompletion_set').filter(participants__id=request.user.id).get(id=course_id)
+        course = Course.objects.find_for_user(course_id, request.user.id, ['lesson_set', 'lesson_set__lessoncompletion_set'])
 
         return render(request, 'dashboard/course_detail.html', {
             'course': course,
@@ -92,8 +92,7 @@ class CourseDetailView(LoginRequiredMixin, View):
 @login_required()
 @permission_required_decorator('dashboard.delete_course')
 def delete_course(request: HttpRequest, course_id):
-    course = Course.objects.filter(
-        id=course_id, participants__id=request.user.id).get()
+    course = Course.objects.find_for_user(course_id, request.user.id)
 
     course.participants.remove()
     course.delete()
@@ -106,9 +105,8 @@ def delete_course(request: HttpRequest, course_id):
 @login_required()
 @permission_required_decorator('dashboard.view_lesson')
 def lesson_detail(request: HttpRequest, course_id: int, lesson_id: int):
-    course = Course.objects.prefetch_related('lesson_set', 'lesson_set__lessoncompletion_set').filter(participants__id=request.user.id).get(id=course_id)
-    lesson = Lesson.objects.annotate(is_complete=Exists(LessonCompletion.objects.filter(user_id=request.user.id, lesson_id__in=Lesson.objects.filter(
-        id=lesson_id, course__id=course_id, course__participants__id=request.user.id)))).filter(id=lesson_id, course__id=course_id, course__participants__id=request.user.id).get()
+    course = Course.objects.find_for_user(course_id, request.user.id, ['lesson_set', 'lesson_set__lessoncompletion_set'])
+    lesson = Lesson.objects.find_for_user_with_completion(lesson_id, course_id, request.user.id)
 
     return render(request, 'dashboard/lesson_detail.html', {
         'course': course,
@@ -137,8 +135,7 @@ class AddLessonView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = ['dashboard.add_lesson']
 
     def get(self, request: HttpRequest, course_id):
-        course = Course.objects.filter(
-            participants__id=request.user.id, id=course_id).get()
+        course = Course.objects.find_for_user(course_id, request.user.id)
 
         return render(request, 'dashboard/add_lesson.html', {
             'form': LessonForm(),
@@ -147,8 +144,7 @@ class AddLessonView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def post(self, request: HttpRequest, course_id: int):
         form = LessonForm(request.POST)
-        course = Course.objects.filter(
-            participants__id=request.user.id, id=course_id).get()
+        course = Course.objects.find_for_user(course_id, request.user.id)
 
         if form.is_valid():
             Lesson.objects.create(name=form.cleaned_data.get('name'), content=form.cleaned_data.get(
@@ -166,8 +162,7 @@ class EditLessonView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = ['dashboard.change_lesson']
 
     def get(self, request: HttpRequest, course_id: int, lesson_id: int):
-        lesson = lesson = Lesson.objects.filter(
-            id=lesson_id, course__id=course_id, course__participants__id=request.user.id).get()
+        lesson = Lesson.objects.find_for_user(lesson_id, course_id, request.user.id)
 
         return render(request, 'dashboard/edit_lesson.html', {
             'form': LessonForm(instance=lesson),
@@ -176,8 +171,7 @@ class EditLessonView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def post(self, request: HttpRequest, course_id: int, lesson_id: int):
         form = LessonForm(request.POST)
-        lesson = Lesson.objects.filter(
-            id=lesson_id, course__id=course_id, course__participants__id=request.user.id).get()
+        lesson = Lesson.objects.find_for_user(lesson_id, course_id, request.user.id)
 
         if form.is_valid():
             lesson.name = form.cleaned_data.get('name')
@@ -196,8 +190,7 @@ class EditLessonView(LoginRequiredMixin, PermissionRequiredMixin, View):
 @login_required()
 @permission_required_decorator('dashboard.delete_lesson')
 def delete_lesson(request: HttpRequest, course_id, lesson_id: int):
-    lesson = Lesson.objects.filter(
-        id=lesson_id, course__id=course_id, course__participants__id=request.user.id).get()
+    lesson = Lesson.objects.find_for_user(lesson_id, course_id, request.user.id)
     lesson.delete()
 
     messages.success(request, 'Deleted successfully')
