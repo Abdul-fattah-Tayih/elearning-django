@@ -67,3 +67,18 @@ class LessonManager(models.Manager):
             course__id=course_id,
             course__participants__id=user_id
         ).get()
+
+class LessonCommentManager(models.Manager):
+    def find_for_user(self, comment_id: int, lesson_id: int, course_id: int, user_id: int, prefetch: List[str] = None):
+        query = self.get_queryset()
+
+        if prefetch:
+            query = query.prefetch_related(*prefetch)
+
+        return query.filter(
+            id=comment_id,
+            lesson_id=lesson_id,
+            lesson__course__id=course_id,
+            lesson__course__participants__id=user_id,
+            user_id=user_id,
+        ).get()

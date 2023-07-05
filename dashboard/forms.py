@@ -30,3 +30,6 @@ class LessonForm(forms.ModelForm):
 
 class LessonCompletionForm(forms.Form):
     completion = forms.CharField(required=True, widget=forms.HiddenInput(), validators=[InList([LessonCompletion.ACTION_COMPLETE, LessonCompletion.ACTION_INCOMPLETE])])
+
+class LessonCommentForm(forms.Form):
+    content = forms.CharField(required=True, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your comment'}))

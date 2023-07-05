@@ -72,3 +72,8 @@ And follow the instructions
 After creation, navigate to http://127.0.0.1:8000/admin to create teachers and students
 
 Then you can login using http://127.0.0.1/dashboard and create courses and assign students and teachers to them
+
+### Credits
+1. [Boostrap Modern Business Theme](https://github.com/StartBootstrap/startbootstrap-modern-business/tree/master)
+2. [Boostrap 5](https://getbootstrap.com/)
+3. [Django](https://www.djangoproject.com/)

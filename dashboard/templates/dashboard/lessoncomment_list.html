@@ -1,0 +1,67 @@
+{% extends 'main.html' %}
+
+{% block title %}{{ lesson.name }} discussion{% endblock %}
+
+{% block content %}
+
+    <div class='container pt-4'>
+        <header class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard.courses' %}">Courses</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard.course_detail' course.id %}">{{ course.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard.lesson_detail' course.id lesson.id %}">{{ lesson.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Discussion</li>
+                </ol>
+            </nav>
+        </header>
+
+        <h1>Discussion</h1>
+        {% for comment in object_list %}
+        <div class="card h-100 shadow border-0 my-4">
+            <div class="card-body p-4">
+                <div class='text-secondary'>{{ comment.created_date|date }}</div>
+                <div>by {{ comment.user.username }}</div>
+                <div class='mt-3'>{{ comment.content|linebreaks }}</div>
+
+                <div>
+                    {% if comment.user.id == request.user.id %}
+                    <a class='btn btn-sm btn-danger rounded' href="{% url 'dashboard.delete_lesson_comment' course.id lesson.id comment.id %}">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="pagination my-3">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="card h-100 shadow border-0">
+            <div class="card-body p-4">
+                <h4 class='card-title'>Add comment</h4>
+                <form method='POST' action="{% url 'dashboard.add_lesson_comment' course.id lesson.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <br>
+                    <button class='btn btn-primary'>Add comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

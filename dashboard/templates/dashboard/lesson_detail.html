@@ -9,9 +9,8 @@
     <div class="container-fluid">
         <div class="row gx-5">
             <div class="col">
-                <!-- Post content-->
                 <article>
-                    <!-- Post header-->
+                    <!-- Side bar -->
                     <div class='row'>
                         <nav class="col-lg-2 nav min-vh-100 bg-dark flex-column align-content-center text-center py-5 pe-0">
                             <p class='text-white'>Completion</p>
@@ -30,8 +29,8 @@
                                 {% endif %}
                             {% endfor %}
                         </nav>
-                        <!-- Post content-->
-                        <section class="col-lg-10 mb-5 my-5 px-5">
+                        <!-- Lesson content -->
+                        <section class="col-lg-10 mb-5 my-5 px-5" style='max-width: 75%'>
                             <header class="mb-4">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
@@ -40,18 +39,15 @@
                                         <li class="breadcrumb-item active" aria-current="page">{{ lesson.name }}</li>
                                     </ol>
                                 </nav>
-                                <!-- Post title-->
-                                <h1 class="fw-bolder mb-1">
+                                <h1 class="fw-bolder my-1">
                                     {{ lesson.name }}
                                     {% if lesson.is_complete %}
                                     <i class="bi bi-check-circle-fill text-success"></i>
                                     {% endif %}
                                 </h1>
-                                <!-- Post meta content-->
-                                <div class="text-muted fst-italic mb-2">{{ lesson.updated_date|date }}</div>
-                                <!-- Post categories-->
-                                <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-                                <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                                <div class='mt-2'>
+                                    <a href="{% url 'dashboard.lesson_discussion' lesson.course.id lesson.id %}">discussion</a>
+                                </div>
                             </header>
                             <section class="mb-5">
                                 <p class="fs-5 mb-4">{{ lesson.content|linebreaks }}</p>
@@ -77,7 +73,7 @@
                                 {% endif %}
                             </form>
                             {% if perms.dashboard.change_lesson %}
-                            <a class='btn btn-warning' href="{% url 'dashboard.edit_lesson' course.id lesson.id %}">Edit Lesson</a>
+                            <a class='btn btn-secondary' href="{% url 'dashboard.edit_lesson' course.id lesson.id %}">Edit Lesson</a>
                             {% endif %}
                             {% if perms.dashboard.delete_lesson %}
                             <a class='btn btn-danger' href="{% url 'dashboard.delete_lesson' course.id lesson.id %}">Delete Lesson</a>

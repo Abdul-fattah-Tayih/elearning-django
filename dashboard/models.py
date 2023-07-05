@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from dashboard.managers import CourseManager, LessonManager
+from dashboard.managers import CourseManager, LessonCommentManager, LessonManager
 
 class Course(models.Model):
     name = models.CharField(blank=False, max_length=264)
@@ -52,7 +52,7 @@ class Lesson(models.Model):
        return Lesson.objects.filter(id__gt=self.id, course__id=course_id, course__participants__id=user_id).first()
     
     def previous_lesson(self, user_id, course_id = None):
-       return Lesson.objects.filter(id__lt=self.id, course__id=course_id or self.course.id, course__participants__id=user_id).first()
+       return Lesson.objects.filter(id__lt=self.id, course__id=course_id or self.course.id, course__participants__id=user_id).order_by('-id').first()
     
     def is_complete(self, user_id):
         return LessonCompletion.objects.filter(lesson_id=self.id, user_id=user_id).exists()
@@ -82,9 +82,12 @@ class LessonCompletion(models.Model):
 class LessonComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, null=False, on_delete=models.CASCADE)
     content = models.TextField(blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+    objects = LessonCommentManager()
 
     class Meta:
         db_table = 'dashboard_lesson_comment'

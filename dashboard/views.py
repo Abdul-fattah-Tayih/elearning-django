@@ -4,9 +4,9 @@ from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.list import ListView
-from dashboard.forms import AddCourseForm, EditCourseForm, LessonCompletionForm, LessonForm
+from dashboard.forms import AddCourseForm, EditCourseForm, LessonCommentForm, LessonCompletionForm, LessonForm
 from django.contrib import messages
-from dashboard.models import Course, Lesson
+from dashboard.models import Course, Lesson, LessonComment
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required as permission_required_decorator
@@ -196,3 +196,59 @@ def delete_lesson(request: HttpRequest, course_id, lesson_id: int):
     messages.success(request, 'Deleted successfully')
 
     return redirect('dashboard.course_detail', course_id)
+
+class LessonCommentsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = LessonComment
+    permission_required = ['dashboard.view_lesson']
+    paginate_by = 15
+
+    def get_queryset(self) -> QuerySet[Any]:
+        return LessonComment.objects.prefetch_related('user').filter(
+            lesson__id=self.kwargs['lesson_id'],
+            lesson__course__id=self.kwargs['course_id'],
+            lesson__course__participants__id=self.request.user.id,
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super(LessonCommentsView, self).get_context_data(**kwargs)
+
+        context['course'] = Course.objects.find_for_user(self.kwargs['course_id'], self.request.user.id)
+        context['lesson'] = Lesson.objects.find_for_user(self.kwargs['lesson_id'], self.kwargs['course_id'], self.request.user.id)
+        context['form'] = LessonCommentForm(self.request.GET or None)
+
+        return context
+
+@login_required()
+@require_http_methods(['POST'])
+@permission_required_decorator('dashboard.view_lesson')
+def add_lesson_comment(request: HttpRequest, course_id: int, lesson_id: int):
+    form = LessonCommentForm(request.POST or None)
+    lesson = Lesson.objects.find_for_user(lesson_id, course_id, request.user.id)
+
+    if form.is_valid():
+        LessonComment.objects.create(
+            user_id=request.user.id,
+            lesson_id=lesson_id,
+            content=form.cleaned_data.get('content')
+        )
+
+        messages.success(request, 'Comment added')
+
+        return redirect('dashboard.lesson_discussion', course_id, lesson_id)
+
+    return redirect('dashboard.lesson_discussion', course_id, lesson_id, kwargs={
+        'user_id': request.user.id,
+        'lesson_id': lesson_id,
+        'content': form.cleaned_data.get('content')
+    })
+
+@login_required()
+@permission_required_decorator('dashboard.view_lesson')
+def delete_lesson_comment(request: HttpRequest, course_id: int, lesson_id: int, comment_id: int):
+    comment = LessonComment.objects.find_for_user(comment_id, lesson_id, course_id, request.user.id)
+
+    comment.delete()
+
+    messages.success(request, 'Deleted successfully')
+
+    return redirect('dashboard.lesson_discussion', course_id, lesson_id)
