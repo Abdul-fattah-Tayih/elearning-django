@@ -12,9 +12,12 @@ Elearning is a Django app that connects students and teachers together, it's fle
 5. Students can:
     1. View courses they're assigned to
     2. View course contents
+    3. Track course completion
+    4. Participate in lesson discussion
 6. Teachers can:
     1. Add course materials
     2. Assign students to courses
+    3. Participate in lesson discussion
 7. Admins can:
     1. Invite teachers to platform
     2. Create new courses
